@@ -1,7 +1,11 @@
 import React from "react";
 import "./App.css";
 
-import Toggle from "./Toggle";
+import Toggle, { withToggle } from "./Toggle";
+
+const MyToggle = withToggle(({ on, toggle }) => (
+  <button onClick={toggle}>{on ? "on" : "off"}</button>
+));
 
 function App() {
   return (
@@ -10,6 +14,7 @@ function App() {
         <Toggle.On>Button is on</Toggle.On>
         <Toggle.Off>Button is off</Toggle.Off>
         <Toggle.Button />
+        <MyToggle />
       </div>
     </Toggle>
   );
