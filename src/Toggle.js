@@ -1,15 +1,34 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Switch from "./Switch";
 
-const ToggleOn = ({ on, children }) => {
+const TOGGLE_CONTEXT = "__toggle__";
+
+const ToggleOn = ({ children }, context) => {
+  const { on } = context[TOGGLE_CONTEXT];
   return on ? children : null;
 };
-const ToggleOff = ({ on, children }) => {
+
+ToggleOn.contextTypes = {
+  [TOGGLE_CONTEXT]: PropTypes.object.isRequired
+};
+
+const ToggleOff = ({ children }, context) => {
+  const { on } = context[TOGGLE_CONTEXT];
   return !on ? children : null;
 };
 
-const ToggleButton = ({ on, toggle, ...props }) => {
+ToggleOff.contextTypes = {
+  [TOGGLE_CONTEXT]: PropTypes.object.isRequired
+};
+
+const ToggleButton = (props, context) => {
+  const { on, toggle } = context[TOGGLE_CONTEXT];
   return <Switch on={on} onClick={toggle} {...props} />;
+};
+
+ToggleButton.contextTypes = {
+  [TOGGLE_CONTEXT]: PropTypes.object.isRequired
 };
 
 class Toggle extends React.Component {
@@ -18,6 +37,11 @@ class Toggle extends React.Component {
   static Button = ToggleButton;
 
   static defaultProps = { onToggle: () => {} };
+
+  static childContextTypes = {
+    [TOGGLE_CONTEXT]: PropTypes.object.isRequired
+  };
+
   state = { on: false };
   toggle = () => {
     this.setState(
@@ -27,14 +51,18 @@ class Toggle extends React.Component {
       }
     );
   };
-  render() {
-    const children = React.Children.map(this.props.children, child => {
-      return React.cloneElement(child, {
+
+  getChildContext() {
+    return {
+      [TOGGLE_CONTEXT]: {
         on: this.state.on,
         toggle: this.toggle
-      });
-    });
-    return <div>{children}</div>;
+      }
+    };
+  }
+
+  render() {
+    return <div>{this.props.children}</div>;
   }
 }
 
