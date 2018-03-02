@@ -4,13 +4,14 @@ import PropTypes from "prop-types";
 const compose = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args));
 
 class Toggle extends React.Component {
-  static defaultProps = { onToggle: () => {} };
-  state = { on: false };
-  toggle = () =>
-    this.setState(
-      ({ on }) => ({ on: !on }),
-      () => this.props.onToggle(this.state.on)
-    );
+  static defaultProps = {
+    onToggle: () => {},
+    onReset: () => {},
+    defaultOn: false
+  };
+
+  initialState = { on: this.props.defaultOn };
+  state = this.initialState;
 
   getTogglerProps = ({ onClick, ...props } = {}) => {
     return {
@@ -19,11 +20,38 @@ class Toggle extends React.Component {
       ...props
     };
   };
+
+  toggle = () => {
+    if (this.isOnControlled()) {
+      this.props.onToggle(!this.props.on);
+    } else {
+      this.setState(
+        ({ on }) => ({ on: !on }),
+        () => this.props.onToggle(this.state.on)
+      );
+    }
+  };
+
+  reset = () => {
+    if (this.isOnControlled()) {
+      this.props.onReset(!this.props.on);
+    } else {
+      this.setState(this.initialState, () => {
+        this.props.onReset(this.initialState);
+      });
+    }
+  };
+
+  isOnControlled = () => {
+    return this.props.on !== undefined;
+  };
+
   render() {
     return this.props.render({
-      on: this.state.on,
+      on: this.isOnControlled() ? this.props.on : this.state.on,
       toggle: this.toggle,
-      getTogglerProps: this.getTogglerProps
+      getTogglerProps: this.getTogglerProps,
+      reset: this.reset
     });
   }
 }
