@@ -3,20 +3,24 @@ import "./App.css";
 
 import Toggle from "./Toggle";
 import Switch from "./Switch";
-function MyToggle({ on, toggle }) {
-  return <button onClick={toggle}>{on ? "on" : "off"}</button>;
-}
 
 function App() {
   return (
     <Toggle
       onToggle={on => console.log("toggle", on)}
-      render={({ on, toggle }) => (
+      render={({ on, getTogglerProps }) => (
         <div>
           {on ? "The button is on" : "The button is off"}
-          <Switch on={on} onClick={toggle} />
+          <Switch on={on} {...getTogglerProps()} />
           <hr />
-          <MyToggle on={on} toggle={toggle} />
+          <button
+            {...getTogglerProps({
+              onClick: () => console.log("MyToggleClick"),
+              id: "mt"
+            })}
+          >
+            {on ? "on" : "off"}
+          </button>
         </div>
       )}
     />

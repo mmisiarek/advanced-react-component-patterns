@@ -1,6 +1,8 @@
 import React from "react";
 
 function Switch({ on, className = "", ...props }) {
+  console.log("on", on);
+
   return (
     <div className="toggle">
       <input className="toggle-input" type="checkbox" />
